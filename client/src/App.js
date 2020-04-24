@@ -12,16 +12,17 @@ const StyledPaper = styled(Paper)({
 });
 
 const StyledButton = styled(Button)({
-  marginRight: '10px'
+  marginRight: '10px',
+  marginBottom: '10px'
 });
 
 const App = () => {
   return (
     <Container>
       <StyledPaper>
-        <h1>Push notifications demo</h1>
-        <StyledButton variant="contained" color="primary">Subscribe to push</StyledButton>
-        <StyledButton variant="contained" color="secondary">Unsubscribe from push</StyledButton>
+        <h1>Push notifications</h1>
+        <StyledButton variant="contained" color="primary">Subscribe</StyledButton>
+        <StyledButton variant="contained" color="secondary">Unsubscribe</StyledButton>
       </StyledPaper>
     </Container>
   )
