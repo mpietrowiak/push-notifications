@@ -20,3 +20,7 @@ Push notifications demo as a coding interview project.
 2. Go to your Heroku dashboard and set the Config Vars in the Settings tab of your app. The variables to set are the ones mentioned in the local development section of this article.
 
 **Note:** `heroku-postbuild` script is added so the client is built automatically after the `start` script is run. So all should work out of the box.
+
+## Demo
+
+See https://matas-push-notifications.herokuapp.com/
