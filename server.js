@@ -20,17 +20,12 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-app.post('/subscribe', (req, res) => {
-  const subscription = req.body;
+app.post('/send', (req, res) => {
+  const { subscription, title } = req.body;
   res.status(201).json({});
-  const payload = JSON.stringify({ title: 'Push test '});
-  webPush.sendNotification(subscription, payload).catch(err => console.error(err));
+  const payload = JSON.stringify({ title });
+  webpush.sendNotification(subscription, payload).catch(err => console.error(err));
 });
-
-// app.use(bodyParser.urlencoded({ extended: true }));
-
-
-
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files

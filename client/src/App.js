@@ -54,28 +54,31 @@ const App = () => {
       }
     }
 
-    switchSubscription();
-  }, [subscriptionIntent]);
-
-  useEffect(() => {
     async function processNotification() {
       if (notificationToSend && notificationToSend.length) {
-        console.log('should send a notification: ');
-        console.log(notificationToSend);
-       
+
+        await fetch('/send', {
+          method: 'POST',
+          body: JSON.stringify({ subscription, title: notificationToSend}),
+          headers: {
+            'content-type': 'application/json'
+          }
+        });
        setNotificationToSend(null);
        setNotificationText('');
       }
     }
 
+    switchSubscription();
     processNotification();
-  }, [notificationToSend]);
+  }, [
+    subscriptionIntent,
+    notificationToSend,
+  ]);
 
   const [notificationText, setNotificationText] = useState('');
-
   const isSubscription = Boolean(subscription && subscription.endpoint);
   const sendButtonDisabled = !isSubscription || !notificationText;
-
 
   return (
     <Container>
