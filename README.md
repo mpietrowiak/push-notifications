@@ -1,6 +1,17 @@
 # Push Notifications in React
 
-Push notifications demo as a coding interview project. Includes whole package: frontend and a backend.
+Push notifications demo as a coding interview project. Includes the whole package: frontend and a backend.
+
+## What is supported
+
+**Desktop**: Google Chrome, Firefox, MS Edge.
+**Android**: Google Chrome
+
+## What is not supported
+
+Safari is not supported as it requires a non standard implementation and also having an Apple Developer account which I don't have. I might implement a solution in the future.
+
+Chrome for iOS is also not supported as it doesn't support service workers for now.
 
 ## Prerequisites
 

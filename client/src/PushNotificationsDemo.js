@@ -71,7 +71,7 @@ const PushNotificationsDemo = () => {
       </div>
     </React.Fragment>
     ) : (
-      <div>Service worker is not registered yet. Please wait.</div>
+      <div>Service worker is not registered yet or not available available.</div>
   )
 };
 
