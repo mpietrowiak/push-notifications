@@ -7,9 +7,7 @@ import Card from '@material-ui/core/Card';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import { styled } from '@material-ui/core/styles';
-import * as serviceWorker from './serviceWorker';
-
-serviceWorker.register();
+import * as pushNotifications from './pushNotifications';
 
 const StyledPaper = styled(Paper)({
   padding: '20px'
@@ -33,7 +31,7 @@ const App = () => {
      }
 
     async function registerSW() {
-      const registration = await serviceWorker.register();
+      const registration = await pushNotifications.registerSW();
       setRegistration(registration);
     }
 
@@ -50,10 +48,10 @@ const App = () => {
     async function switchSubscription() {
       console.log('switching subscription....');
       if (subscriptionIntent) {
-         const subscription = await serviceWorker.subscribePush(vapidPubKey);
-         setSubscription(subscription);
+        const subscription = await pushNotifications.subscribePush(vapidPubKey);
+        setSubscription(subscription);
       } else {
-        const unsubscriptionSuccess = await serviceWorker.unsubscribePush();
+        const unsubscriptionSuccess = await pushNotifications.unsubscribePush();
         console.log(unsubscriptionSuccess);
         if (unsubscriptionSuccess) {
           setSubscription(null);

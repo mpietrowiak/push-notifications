@@ -13,14 +13,18 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-export async function register() {
+export async function registerSW() {
   const registration = await navigator.serviceWorker.register('worker.js');
   return registration;
 }
 
 export async function subscribePush(pubVapidKey) {
+  const permission = await window.Notification.requestPermission();
+  if(permission !== 'granted'){
+    throw new Error('Permission not granted for Notification');
+  }
+  await navigator.serviceWorker.ready;
   const registration = await navigator.serviceWorker.getRegistration();
-  console.log(registration);
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(pubVapidKey),
@@ -31,10 +35,7 @@ export async function subscribePush(pubVapidKey) {
 export async function unsubscribePush() {
   const registration = await navigator.serviceWorker.getRegistration();
   const subscription = await registration.pushManager.getSubscription();
-  console.log('subscription:', subscription);
   if (subscription && subscription.unsubscribe) {
-    console.log('Got subscription!');
-    console.log(subscription);
     const successful = await subscription.unsubscribe();
     return successful;
   }
