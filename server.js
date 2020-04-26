@@ -20,6 +20,10 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
+app.get('/pubkey', (req, res) => {
+  res.status(200).json({ key: process.env.VAPID_PUBLIC_KEY });
+});
+
 app.post('/send', (req, res) => {
   const { subscription, title } = req.body;
   res.status(201).json({});

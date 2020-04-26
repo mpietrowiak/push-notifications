@@ -22,16 +22,23 @@ const StyledButton = styled(Button)({
 });
 
 const App = () => {
+  const [vapidPubKey, setVapidPubKey] = useState(null);
   const [registration, setRegistration] = useState(null);
 
   useEffect(() => {
-    // console.log('running registerSW');
+     async function getVapidPubKey() {
+       const response = await fetch('/pubkey');
+       const json = await response.json();
+       setVapidPubKey(json.key);
+     }
+
     async function registerSW() {
       const registration = await serviceWorker.register();
       setRegistration(registration);
     }
 
     registerSW();
+    getVapidPubKey();
   }, []);
 
   const [subscriptionIntent, setSubscriptionIntent] = useState(false);  
@@ -43,7 +50,7 @@ const App = () => {
     async function switchSubscription() {
       console.log('switching subscription....');
       if (subscriptionIntent) {
-         const subscription = await serviceWorker.subscribePush();
+         const subscription = await serviceWorker.subscribePush(vapidPubKey);
          setSubscription(subscription);
       } else {
         const unsubscriptionSuccess = await serviceWorker.unsubscribePush();
@@ -77,6 +84,8 @@ const App = () => {
   ]);
 
   const [notificationText, setNotificationText] = useState('');
+
+  const canSubscribe = Boolean(registration && vapidPubKey);
   const isSubscription = Boolean(subscription && subscription.endpoint);
   const sendButtonDisabled = !isSubscription || !notificationText;
 
@@ -85,25 +94,21 @@ const App = () => {
       <StyledPaper>
         <h1>Push notifications</h1>
 
-        {/*<h2>Subscription? {JSON.stringify(subscription)}</h2>*/}
+        {canSubscribe ? (
+          <React.Fragment>
+            <StyledButton variant="contained" color="primary" disabled={isSubscription} onClick={() => setSubscriptionIntent(true)}>Subscribe</StyledButton>
+            <StyledButton variant="contained" color="secondary" disabled={!isSubscription} onClick={() => setSubscriptionIntent(false)}>Unsubscribe</StyledButton>
+          
+            <h2>Send</h2>
 
-        {
-          Boolean(registration) ? (
-            <React.Fragment>
-              <StyledButton variant="contained" color="primary" disabled={isSubscription} onClick={() => setSubscriptionIntent(true)}>Subscribe</StyledButton>
-              <StyledButton variant="contained" color="secondary" disabled={!isSubscription} onClick={() => setSubscriptionIntent(false)}>Unsubscribe</StyledButton>
-            
-              <h2>Send</h2>
-
-              <div>
-                <TextField id="standard-basic" label="Text to display" disabled={!isSubscription} value={notificationText} onChange={(event) => setNotificationText(event.target.value)}/>
-                <StyledButton variant="contained" color="primary" disabled={sendButtonDisabled} onClick={(event) => setNotificationToSend(notificationText)}>Send</StyledButton>
-              </div>
-            </React.Fragment>
+            <div>
+              <TextField id="standard-basic" label="Text to display" disabled={!isSubscription} value={notificationText} onChange={(event) => setNotificationText(event.target.value)}/>
+              <StyledButton variant="contained" color="primary" disabled={sendButtonDisabled} onClick={(event) => setNotificationToSend(notificationText)}>Send</StyledButton>
+            </div>
+          </React.Fragment>
           ) : (
             <div>Service worker is not registered yet. Please wait.</div>
-          )
-        }
+        )}
       </StyledPaper>
     </Container>
   )

@@ -1,7 +1,5 @@
 let registration;
 
-const pubVapidKey = 'BHf1bzlOSSbU8lI5zmqAkOY4nBHG9kdQAB6oy1aYWk-kZ_xtpn2EjQcnhVx71ItDiWeXlW3bOLuDy9QWqjiEdJA';
-
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
@@ -23,7 +21,7 @@ export async function register() {
   return registration;
 }
 
-export async function subscribePush() {
+export async function subscribePush(pubVapidKey) {
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(pubVapidKey),
