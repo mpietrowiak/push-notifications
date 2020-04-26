@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import * as pushNotifications from './pushNotifications';
 
 function usePushNotifications() {
-  const [vapidPubKey, setVapidPubKey] = useState(null);
+  const [notificationsPermission, setNotificationsPermission] = useState(null);
   const [registration, setRegistration] = useState(null);
   const [notificationText, setNotificationText] = useState('');
   const [subscriptionIntent, setSubscriptionIntent] = useState(false);  
@@ -10,29 +10,29 @@ function usePushNotifications() {
   const [sendingIntent, setSendingIntent] = useState(null);
 
   useEffect(() => {
-     async function getVapidPubKey() {
-       const response = await fetch('/pubkey');
-       const json = await response.json();
-       setVapidPubKey(json.key);
-     }
-
     async function registerSW() {
       const registration = await pushNotifications.registerSW();
       setRegistration(registration);
     }
+    
+    async function askPermission() {
+      const permission = await pushNotifications.askPermission();
+      setNotificationsPermission(permission);
+    };
 
     registerSW();
-    getVapidPubKey();
+    askPermission();
   }, []);
 
   useEffect(() => {
     async function switchSubscription() {
       if (subscriptionIntent) {
-        const subscription = await pushNotifications.subscribePush(vapidPubKey);
-        setSubscription(subscription);
+        if (notificationsPermission === 'granted') {
+          const subscription = await pushNotifications.subscribeToPush();
+          setSubscription(subscription);
+        }
       } else {
-        const unsubscriptionSuccess = await pushNotifications.unsubscribePush();
-        console.log(unsubscriptionSuccess);
+        const unsubscriptionSuccess = await pushNotifications.unsubscribeFromPush();
         if (unsubscriptionSuccess) {
           setSubscription(null);
         }      
@@ -40,39 +40,33 @@ function usePushNotifications() {
     }
 
     switchSubscription();
-  }, [subscriptionIntent, vapidPubKey]);
+  }, [subscriptionIntent, notificationsPermission]);
 
   useEffect(() => {
     async function processSendingIntent() {
       if (sendingIntent && notificationText && notificationText.length) {
-
-        await fetch('/send', {
-          method: 'POST',
-          body: JSON.stringify({ subscription, body: notificationText}),
-          headers: {
-            'content-type': 'application/json'
-          }
-        });
-       setSendingIntent(null);
-       setNotificationText('');
+        await pushNotifications.sendNotification(subscription, notificationText);
+        setSendingIntent(null);
+        setNotificationText('');
       }
     }
 
     processSendingIntent();
   }, [sendingIntent, notificationText, subscription]);
 
-  const canSubscribe = Boolean(registration && vapidPubKey);
   const isSubscribed = Boolean(subscription && subscription.endpoint);
 
   return {
-    canSubscribe,
+    notificationsPermission,
+
+    registration,
     setSubscriptionIntent,
     isSubscribed,
 
     notificationText,
     setNotificationText,
 
-    setSendingIntent
+    setSendingIntent,
   }
 }
 

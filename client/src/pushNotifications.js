@@ -18,11 +18,21 @@ export async function registerSW() {
   return registration;
 }
 
-export async function subscribePush(pubVapidKey) {
+export async function askPermission() {
   const permission = await window.Notification.requestPermission();
-  if(permission !== 'granted'){
-    throw new Error('Permission not granted for Notification');
-  }
+  console.log(permission);
+  return permission;
+}
+
+async function getVapidKey() {
+  const response = await fetch('/pubkey');
+  const json = await response.json();
+  return json.key;
+}
+
+export async function subscribeToPush() {
+  const pubVapidKey = await getVapidKey();
+  console.log(pubVapidKey);
   await navigator.serviceWorker.ready;
   const registration = await navigator.serviceWorker.getRegistration();
   const subscription = await registration.pushManager.subscribe({
@@ -32,7 +42,7 @@ export async function subscribePush(pubVapidKey) {
   return subscription;
 }
 
-export async function unsubscribePush() {
+export async function unsubscribeFromPush() {
   const registration = await navigator.serviceWorker.getRegistration();
   const subscription = await registration.pushManager.getSubscription();
   if (subscription && subscription.unsubscribe) {
@@ -40,4 +50,14 @@ export async function unsubscribePush() {
     return successful;
   }
   return false;
+}
+
+export async function sendNotification(subscription, notificationText) {
+  await fetch('/send', {
+    method: 'POST',
+    body: JSON.stringify({ subscription, body: notificationText}),
+    headers: {
+      'content-type': 'application/json'
+    }
+  });
 }
