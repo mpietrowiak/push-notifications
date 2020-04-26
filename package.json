@@ -21,8 +21,6 @@
   },
   "homepage": "https://github.com/mpietrowiak/push-notifications#readme",
   "dependencies": {
-    "@material-ui/core": "^4.9.11",
-    "@material-ui/styles": "^4.9.10",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "web-push": "^3.4.3"
