@@ -1,13 +1,12 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import './App.css';
 
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Card from '@material-ui/core/Card';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import { styled } from '@material-ui/core/styles';
-import * as pushNotifications from './pushNotifications';
+import usePushNotifications from './usePushNotifications';
 
 const StyledPaper = styled(Paper)({
   padding: '20px'
@@ -20,68 +19,15 @@ const StyledButton = styled(Button)({
 });
 
 const App = () => {
-  const [vapidPubKey, setVapidPubKey] = useState(null);
-  const [registration, setRegistration] = useState(null);
-
-  useEffect(() => {
-     async function getVapidPubKey() {
-       const response = await fetch('/pubkey');
-       const json = await response.json();
-       setVapidPubKey(json.key);
-     }
-
-    async function registerSW() {
-      const registration = await pushNotifications.registerSW();
-      setRegistration(registration);
-    }
-
-    registerSW();
-    getVapidPubKey();
-  }, []);
-
-  const [subscriptionIntent, setSubscriptionIntent] = useState(false);  
-  const [subscription, setSubscription] = useState(null);
-  const [notificationToSend, setNotificationToSend] = useState(null);
-
-
-  useEffect(() => {
-    async function switchSubscription() {
-      console.log('switching subscription....');
-      if (subscriptionIntent) {
-        const subscription = await pushNotifications.subscribePush(vapidPubKey);
-        setSubscription(subscription);
-      } else {
-        const unsubscriptionSuccess = await pushNotifications.unsubscribePush();
-        console.log(unsubscriptionSuccess);
-        if (unsubscriptionSuccess) {
-          setSubscription(null);
-        }      
-      }
-    }
-
-    switchSubscription();
-  }, [subscriptionIntent]);
-
-  useEffect(() => {
-    async function processNotification() {
-      if (notificationToSend && notificationToSend.length) {
-
-        await fetch('/send', {
-          method: 'POST',
-          body: JSON.stringify({ subscription, title: notificationToSend}),
-          headers: {
-            'content-type': 'application/json'
-          }
-        });
-       setNotificationToSend(null);
-       setNotificationText('');
-      }
-    }
-
-    processNotification();
-  }, [notificationToSend]);
-
-  const [notificationText, setNotificationText] = useState('');
+  const {
+    registration,
+    vapidPubKey,
+    subscription,
+    notificationText,
+    setSubscriptionIntent,
+    setNotificationText,
+    setNotificationToSend
+  } = usePushNotifications();
 
   const canSubscribe = Boolean(registration && vapidPubKey);
   const isSubscription = Boolean(subscription && subscription.endpoint);
