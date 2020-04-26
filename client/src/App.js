@@ -17,6 +17,10 @@ const App = () => (
         <h1>Push notifications</h1>
 
         <PushNotificationsDemo />
+
+        <footer>
+          <a href="https://github.com/mpietrowiak/push-notifications">See this project on GitHub.</a>
+        </footer>
       </StyledPaper>
     </Container>
   </SnackbarProvider>

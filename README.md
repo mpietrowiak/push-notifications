@@ -1,6 +1,6 @@
-# push-notifications - WIP!
+# Push Notifications in React
 
-Push notifications demo as a coding interview project.
+Push notifications demo as a coding interview project. Includes whole package: frontend and a backend.
 
 ## Prerequisites
 
