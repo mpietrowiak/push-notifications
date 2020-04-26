@@ -32,7 +32,6 @@ async function getVapidKey() {
 
 export async function subscribeToPush() {
   const pubVapidKey = await getVapidKey();
-  console.log(pubVapidKey);
   await navigator.serviceWorker.ready;
   const registration = await navigator.serviceWorker.getRegistration();
   const subscription = await registration.pushManager.subscribe({
