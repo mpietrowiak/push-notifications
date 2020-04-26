@@ -20,6 +20,7 @@ export async function register() {
 
 export async function subscribePush(pubVapidKey) {
   const registration = await navigator.serviceWorker.getRegistration();
+  console.log(registration);
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(pubVapidKey),

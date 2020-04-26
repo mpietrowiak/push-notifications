@@ -61,6 +61,10 @@ const App = () => {
       }
     }
 
+    switchSubscription();
+  }, [subscriptionIntent]);
+
+  useEffect(() => {
     async function processNotification() {
       if (notificationToSend && notificationToSend.length) {
 
@@ -76,12 +80,8 @@ const App = () => {
       }
     }
 
-    switchSubscription();
     processNotification();
-  }, [
-    subscriptionIntent,
-    notificationToSend,
-  ]);
+  }, [notificationToSend]);
 
   const [notificationText, setNotificationText] = useState('');
 
