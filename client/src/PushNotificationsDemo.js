@@ -15,6 +15,10 @@ const StyledAlert = styled(Alert)({
   marginBottom: '20px'
 });
 
+const StyledTextField = styled(TextField)({
+  marginBottom: '10px'
+});
+
 const PushNotificationsDemo = () => {
   const {
     notificationsPermission,
@@ -56,9 +60,9 @@ const PushNotificationsDemo = () => {
       <h2>Send</h2>
   
       <div>
-        <TextField 
+        <StyledTextField 
           id="standard-basic" 
-          label="Text to display" 
+          label="Message to send" 
           disabled={!isSubscribed} 
           value={notificationText} 
           onChange={(event) => setNotificationText(event.target.value)}/>
