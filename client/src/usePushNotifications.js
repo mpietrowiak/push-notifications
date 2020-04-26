@@ -4,6 +4,10 @@ import * as pushNotifications from './pushNotifications';
 function usePushNotifications() {
   const [vapidPubKey, setVapidPubKey] = useState(null);
   const [registration, setRegistration] = useState(null);
+  const [notificationText, setNotificationText] = useState('');
+  const [subscriptionIntent, setSubscriptionIntent] = useState(false);  
+  const [subscription, setSubscription] = useState(null);
+  const [sendingIntent, setSendingIntent] = useState(null);
 
   useEffect(() => {
      async function getVapidPubKey() {
@@ -21,14 +25,8 @@ function usePushNotifications() {
     getVapidPubKey();
   }, []);
 
-  const [subscriptionIntent, setSubscriptionIntent] = useState(false);  
-  const [subscription, setSubscription] = useState(null);
-  const [notificationToSend, setNotificationToSend] = useState(null);
-
-
   useEffect(() => {
     async function switchSubscription() {
-      console.log('switching subscription....');
       if (subscriptionIntent) {
         const subscription = await pushNotifications.subscribePush(vapidPubKey);
         setSubscription(subscription);
@@ -42,37 +40,39 @@ function usePushNotifications() {
     }
 
     switchSubscription();
-  }, [subscriptionIntent]);
+  }, [subscriptionIntent, vapidPubKey]);
 
   useEffect(() => {
-    async function processNotification() {
-      if (notificationToSend && notificationToSend.length) {
+    async function processSendingIntent() {
+      if (sendingIntent && notificationText && notificationText.length) {
 
         await fetch('/send', {
           method: 'POST',
-          body: JSON.stringify({ subscription, title: notificationToSend}),
+          body: JSON.stringify({ subscription, title: notificationText}),
           headers: {
             'content-type': 'application/json'
           }
         });
-       setNotificationToSend(null);
+       setSendingIntent(null);
        setNotificationText('');
       }
     }
 
-    processNotification();
-  }, [notificationToSend]);
+    processSendingIntent();
+  }, [sendingIntent, notificationText, subscription]);
 
-  const [notificationText, setNotificationText] = useState('');
+  const canSubscribe = Boolean(registration && vapidPubKey);
+  const isSubscribed = Boolean(subscription && subscription.endpoint);
 
   return {
-    registration,
-    vapidPubKey,
-    subscription,
-    notificationText,
+    canSubscribe,
     setSubscriptionIntent,
+    isSubscribed,
+
+    notificationText,
     setNotificationText,
-    setNotificationToSend
+
+    setSendingIntent
   }
 }
 

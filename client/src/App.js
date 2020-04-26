@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
 
 import Button from '@material-ui/core/Button';
@@ -20,18 +20,17 @@ const StyledButton = styled(Button)({
 
 const App = () => {
   const {
-    registration,
-    vapidPubKey,
-    subscription,
-    notificationText,
+    canSubscribe,
     setSubscriptionIntent,
+    isSubscribed,
+
+    notificationText,
     setNotificationText,
-    setNotificationToSend
+
+    setSendingIntent,
   } = usePushNotifications();
 
-  const canSubscribe = Boolean(registration && vapidPubKey);
-  const isSubscription = Boolean(subscription && subscription.endpoint);
-  const sendButtonDisabled = !isSubscription || !notificationText;
+  const sendButtonDisabled = !isSubscribed || !notificationText;
 
   return (
     <Container>
@@ -40,14 +39,14 @@ const App = () => {
 
         {canSubscribe ? (
           <React.Fragment>
-            <StyledButton variant="contained" color="primary" disabled={isSubscription} onClick={() => setSubscriptionIntent(true)}>Subscribe</StyledButton>
-            <StyledButton variant="contained" color="secondary" disabled={!isSubscription} onClick={() => setSubscriptionIntent(false)}>Unsubscribe</StyledButton>
+            <StyledButton variant="contained" color="primary" disabled={isSubscribed} onClick={() => setSubscriptionIntent(true)}>Subscribe</StyledButton>
+            <StyledButton variant="contained" color="secondary" disabled={!isSubscribed} onClick={() => setSubscriptionIntent(false)}>Unsubscribe</StyledButton>
           
             <h2>Send</h2>
 
             <div>
-              <TextField id="standard-basic" label="Text to display" disabled={!isSubscription} value={notificationText} onChange={(event) => setNotificationText(event.target.value)}/>
-              <StyledButton variant="contained" color="primary" disabled={sendButtonDisabled} onClick={(event) => setNotificationToSend(notificationText)}>Send</StyledButton>
+              <TextField id="standard-basic" label="Text to display" disabled={!isSubscribed} value={notificationText} onChange={(event) => setNotificationText(event.target.value)}/>
+              <StyledButton variant="contained" color="primary" disabled={sendButtonDisabled} onClick={(event) => setSendingIntent(true)}>Send</StyledButton>
             </div>
           </React.Fragment>
           ) : (
