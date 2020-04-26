@@ -48,7 +48,7 @@ function usePushNotifications() {
 
         await fetch('/send', {
           method: 'POST',
-          body: JSON.stringify({ subscription, title: notificationText}),
+          body: JSON.stringify({ subscription, body: notificationText}),
           headers: {
             'content-type': 'application/json'
           }

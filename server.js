@@ -25,9 +25,9 @@ app.get('/pubkey', (req, res) => {
 });
 
 app.post('/send', (req, res) => {
-  const { subscription, title } = req.body;
+  const { subscription, body } = req.body;
   res.status(201).json({});
-  const payload = JSON.stringify({ title });
+  const payload = JSON.stringify({ body });
   webpush.sendNotification(subscription, payload).catch(err => console.error(err));
 });
 
@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === 'production') {
   // Handle React routing, return all requests to React app
   app.get('*', function(req, res) {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
+  });z
 }
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
