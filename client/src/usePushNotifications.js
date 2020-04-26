@@ -59,7 +59,7 @@ function usePushNotifications() {
     }
 
     processSendingIntent();
-  }, [sendingIntent, notificationText, subscription]);
+  }, [sendingIntent, notificationText, subscription, enqueueSnackbar]);
 
   const isSubscribed = Boolean(subscription && subscription.endpoint);
 
