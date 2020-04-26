@@ -13,6 +13,8 @@ Safari is not supported as it requires a non standard implementation and also ha
 
 Chrome for iOS is also not supported as it doesn't support service workers for now.
 
+You must use HTTPS for service workers to work, unless you are developing on localhost.
+
 ## Prerequisites
 
 1. Run `./node_modules/web-push/src/cli.js generate-vapid-keys` to generate a VAPID key pair.
