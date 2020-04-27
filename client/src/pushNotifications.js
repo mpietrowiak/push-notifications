@@ -42,23 +42,44 @@ export async function subscribeToPush() {
     applicationServerKey: urlBase64ToUint8Array(pubVapidKey),
   });
   console.log(subscription);
+  await fetch('/subscribe', {
+    method: 'POST',
+    body: JSON.stringify({ subscription }),
+    headers: {
+      'content-type': 'application/json'
+    }
+  });
+  return subscription;
+}
+
+export async function getSubscription(registration) {
+  const subscription = await registration.pushManager.getSubscription();
   return subscription;
 }
 
 export async function unsubscribeFromPush() {
   const registration = await navigator.serviceWorker.getRegistration();
-  const subscription = await registration.pushManager.getSubscription();
+  const subscription = await getSubscription(registration);
   if (subscription && subscription.unsubscribe) {
     const successful = await subscription.unsubscribe();
+    if (successful) {
+      await fetch('/unsubscribe', {
+        method: 'POST',
+        body: JSON.stringify({ subscription }),
+        headers: {
+          'content-type': 'application/json'
+        }
+      });
+    }
     return successful;
   }
   return false;
 }
 
-export async function sendNotification(subscription, notificationText) {
+export async function sendNotification(notificationText) {
   await fetch('/send', {
     method: 'POST',
-    body: JSON.stringify({ subscription, body: notificationText}),
+    body: JSON.stringify({ body: notificationText}),
     headers: {
       'content-type': 'application/json'
     }

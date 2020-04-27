@@ -11,6 +11,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 
+let subscriptions = [];
+
 const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
@@ -24,11 +26,31 @@ app.get('/pubkey', (req, res) => {
   res.status(200).json({ key: process.env.VAPID_PUBLIC_KEY });
 });
 
+app.post('/subscribe', (req, res) => {
+  const { subscription } = req.body;
+
+  // add a new subscription only if there is no existing subscription with the same endpoint
+  if (!subscriptions.some((existingSubscription) => existingSubscription.endpoint === subscription.endpoint)) {
+    subscriptions.push(subscription);
+  }
+  res.status(200).json({});
+});
+
+app.post('/unsubscribe', (req, res) => {
+  const { subscription } = req.body;
+  if (subscriptions) {
+    subscriptions = subscriptions.filter((existingSubscription) => existingSubscription.endpoint !== subscription.endpoint);
+  }
+  res.status(200).json({});
+});
+
 app.post('/send', (req, res) => {
-  const { subscription, body } = req.body;
+  const { body } = req.body;
   res.status(201).json({});
   const payload = JSON.stringify({ body });
-  webpush.sendNotification(subscription, payload).catch(err => console.error(err));
+  subscriptions.forEach((subscription) => {
+    webpush.sendNotification(subscription, payload).catch(err => console.error(err));
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {

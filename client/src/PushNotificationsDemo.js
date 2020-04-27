@@ -33,7 +33,7 @@ const PushNotificationsDemo = () => {
 
   } = usePushNotifications();
   
-  const sendButtonDisabled = !isSubscribed || !notificationText;
+  const sendButtonDisabled = !notificationText;
   const isPermissionDenied = notificationsPermission && notificationsPermission !== 'granted';
   const isPermissionGranted = notificationsPermission === 'granted';
 
@@ -44,6 +44,8 @@ const PushNotificationsDemo = () => {
           Notifications permission is denied. Please allow notifications in your browser.
         </StyledAlert>
       </React.Fragment> : null}
+
+      <h2>This client's subscription</h2>
 
       <StyledButton 
         variant="contained" 
@@ -57,13 +59,12 @@ const PushNotificationsDemo = () => {
         disabled={!isPermissionGranted || !isSubscribed} 
         onClick={() => setSubscriptionIntent(false)}>Unsubscribe</StyledButton>
     
-      <h2>Send</h2>
+      <h2>Send to all</h2>
   
       <div>
         <StyledTextField 
           id="standard-basic" 
           label="Message to send" 
-          disabled={!isSubscribed} 
           value={notificationText} 
           onChange={(event) => setNotificationText(event.target.value)}/>
 
@@ -71,7 +72,7 @@ const PushNotificationsDemo = () => {
           variant="contained" 
           color="primary" 
           disabled={sendButtonDisabled} 
-          onClick={(event) => setSendingIntent(true)}>Send</StyledButton>
+          onClick={(event) => setSendingIntent(true)}>Send to all</StyledButton>
       </div>
     </React.Fragment>
     ) : (

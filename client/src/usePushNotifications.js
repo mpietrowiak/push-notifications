@@ -12,18 +12,24 @@ function usePushNotifications() {
   const [sendingIntent, setSendingIntent] = useState(null);
 
   useEffect(() => {
-    async function registerSW() {
+    async function initialize() {
       const registration = await pushNotifications.registerSW();
       setRegistration(registration);
-    }
-    
-    async function askPermission() {
+      if (!registration) {
+        return;
+      }
       const permission = await pushNotifications.askPermission();
       setNotificationsPermission(permission);
-    };
 
-    registerSW();
-    askPermission();
+      // get and set existing subscription
+      const subscription = await pushNotifications.getSubscription(registration);
+      if (!subscription) {
+        return;
+      }
+      setSubscription(subscription);
+    }
+
+    initialize();
   }, []);
 
   useEffect(() => {
@@ -52,7 +58,7 @@ function usePushNotifications() {
     async function processSendingIntent() {
       if (sendingIntent && notificationText && notificationText.length) {
         enqueueSnackbar('Sending push request to the backend...');
-        await pushNotifications.sendNotification(subscription, notificationText);
+        await pushNotifications.sendNotification(notificationText);
         setSendingIntent(null);
         setNotificationText('');
       }
