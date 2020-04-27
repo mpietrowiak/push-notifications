@@ -9,9 +9,27 @@ const webpush = require('web-push');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 
-let subscriptions = [];
+const subscriptionsFilePath = path.join(__dirname, 'subscriptions.json');
+
+function readSubscriptions() {
+  let subscriptions = [];
+  try {
+    subscriptions = JSON.parse(fs.readFileSync(subscriptionsFilePath, 'utf-8'));
+  } catch (error) {
+    console.error('Falling back to an empty subscriptions list due to a file read error: ', error);
+    subscriptions = [];
+  }
+  return subscriptions;
+}
+
+function saveSubscriptions() {
+  fs.writeFileSync(subscriptionsFilePath, JSON.stringify(subscriptions), 'utf-8');
+}
+
+let subscriptions = readSubscriptions();
 
 const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
@@ -33,6 +51,7 @@ app.post('/subscribe', (req, res) => {
   if (!subscriptions.some((existingSubscription) => existingSubscription.endpoint === subscription.endpoint)) {
     subscriptions.push(subscription);
   }
+  saveSubscriptions();
   res.status(200).json({});
 });
 
@@ -41,6 +60,7 @@ app.post('/unsubscribe', (req, res) => {
   if (subscriptions) {
     subscriptions = subscriptions.filter((existingSubscription) => existingSubscription.endpoint !== subscription.endpoint);
   }
+  saveSubscriptions();
   res.status(200).json({});
 });
 
