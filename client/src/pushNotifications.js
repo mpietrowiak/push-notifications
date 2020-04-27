@@ -14,8 +14,11 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 export async function registerSW() {
-  const registration = await navigator.serviceWorker.register('worker.js');
-  return registration;
+  if ('serviceWorker' in navigator) {
+    const registration = await navigator.serviceWorker.register('worker.js');
+    return registration;
+  }
+  return null;
 }
 
 export async function askPermission() {
@@ -38,6 +41,7 @@ export async function subscribeToPush() {
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(pubVapidKey),
   });
+  console.log(subscription);
   return subscription;
 }
 
